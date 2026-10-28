@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}P7 Dashboard{% endblock %}</title>
+  <style>
+    :root {
+      --bg: #0a0d11; --bg2: #0f1419; --card: #141922;
+      --border: #1f2733; --text: #e6edf3; --dim: #8b949e;
+      --accent: #00ffb2; --blue: #58a6ff; --purple: #bc8cff;
+      --red: #f85149; --orange: #f78166; --yellow: #e3b341; --green: #7ee787;
+      --mono: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
+      --sans: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg); color: var(--text); font-family: var(--sans);
+      padding: 1.5rem; line-height: 1.5;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-bottom: 1rem; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem;
+    }
+    h1 { font-size: 20px; font-weight: 600; font-family: var(--mono); color: var(--accent); }
+    h1 small { color: var(--dim); font-weight: 400; font-size: 13px; margin-left: .5rem; }
+    h2 { font-size: 15px; font-weight: 600; margin: 1.5rem 0 .75rem; color: var(--dim); font-family: var(--mono); letter-spacing: .04em; text-transform: uppercase; }
+    .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    .card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+      padding: 1.1rem 1.25rem; transition: border-color .15s;
+    }
+    .card:hover { border-color: var(--accent); }
+    .card .n { font-family: var(--mono); font-size: 32px; font-weight: 600; color: var(--accent); line-height: 1.1; }
+    .card .k { font-size: 13px; color: var(--dim); margin-top: .25rem; }
+    .card .l { font-size: 15px; font-weight: 500; margin-bottom: .5rem; }
+    .flex { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+    .badge {
+      display: inline-block; font-family: var(--mono); font-size: 11px;
+      padding: 2px 8px; border-radius: 4px; text-transform: uppercase;
+    }
+    .b-crit { background: rgba(248,81,73,.15); color: var(--red); }
+    .b-high { background: rgba(247,129,102,.15); color: var(--orange); }
+    .b-med { background: rgba(227,179,65,.15); color: var(--yellow); }
+    .b-patch { background: rgba(126,231,135,.15); color: var(--green); }
+    .b-minor { background: rgba(227,179,65,.15); color: var(--yellow); }
+    .b-major { background: rgba(248,81,73,.15); color: var(--red); }
+    .b-unknown { background: rgba(139,148,158,.15); color: var(--dim); }
+    table {
+      width: 100%; border-collapse: collapse; font-size: 13px;
+      background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+    }
+    th, td { padding: .55rem .75rem; text-align: left; border-bottom: 1px solid var(--border); font-family: var(--mono); }
+    th { background: var(--bg2); color: var(--dim); font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
+    tbody tr:hover { background: var(--bg2); }
+    .pill-list { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .pill {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 6px;
+      padding: .3rem .6rem; font-family: var(--mono); font-size: 12px;
+    }
+    .pill .n { color: var(--accent); font-weight: 600; }
+    footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); color: var(--dim); font-size: 12px; font-family: var(--mono); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>P7 <small>// autonomous CVE remediation dashboard</small></h1>
+    <div class="flex">
+      <a href="/">home</a>
+      <a href="{{ dojo_url }}" target="_blank">DefectDojo ↗</a>
+      <a href="https://github.com/PyHackSecGP/p7-autopatch" target="_blank">GitHub ↗</a>
+    </div>
+  </header>
+
+  {% block content %}{% endblock %}
+
+  <footer>
+    data pulled live from DefectDojo · p7-autopatch v0.1 · {{ dojo_url }}
+  </footer>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}P7 — All Products{% endblock %}
+{% block content %}
+<h2>Products — High/Critical findings</h2>
+<div class="grid">
+  {% for p in products %}
+  <a href="/product/{{ p.id }}" class="card">
+    <div class="l">{{ p.name }}</div>
+    <div class="n">{% if counts[p.id] < 0 %}?{% else %}{{ counts[p.id] }}{% endif %}</div>
+    <div class="k">product #{{ p.id }} · active high+</div>
+  </a>
+  {% endfor %}
+</div>
+{% endblock %}

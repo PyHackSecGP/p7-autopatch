@@ -26,6 +26,11 @@ def main(argv: list[str] | None = None) -> int:
     pl.add_argument("--patchable-only", action="store_true", help="Only show rows w/ component+fix")
     pl.add_argument("--log-level", default="WARNING")
 
+    ps = sub.add_parser("serve", help="Launch web dashboard — single-pane view over DefectDojo")
+    ps.add_argument("--host", default="0.0.0.0")
+    ps.add_argument("--port", type=int, default=7777)
+    ps.add_argument("--log-level", default="INFO")
+
     pr = sub.add_parser("run", help="Run the patch loop against one CT target")
     pr.add_argument("--target", type=int, required=True, help="Proxmox CT ID to patch")
     pr.add_argument("--dry-run", action="store_true", help="Classify + print plan; no pct actions")
@@ -67,6 +72,12 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.cmd == "list":
         return _cmd_list(dojo, args)
+
+    if args.cmd == "serve":
+        from .web import serve
+        print(f"\n== P7 dashboard http://{args.host}:{args.port} ==\n")
+        serve(host=args.host, port=args.port)
+        return 0
 
     if args.cmd == "run" or args.target:
         from .notify import from_env as notifier_from_env

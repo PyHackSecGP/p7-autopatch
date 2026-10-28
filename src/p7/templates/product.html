@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}P7 — {{ product_name }}{% endblock %}
+{% block content %}
+<h2>{{ product_name }} <small style="color:var(--dim);font-size:12px;">(product #{{ product_id }})</small></h2>
+
+<div class="grid">
+  <div class="card"><div class="k">Pulled</div><div class="n">{{ total }}</div></div>
+  <div class="card"><div class="k">Patchable</div><div class="n">{{ patchable }}</div></div>
+  <div class="card"><div class="k">PATCH (easy)</div><div class="n">{{ levels.get('patch', 0) }}</div></div>
+  <div class="card"><div class="k">MINOR</div><div class="n">{{ levels.get('minor', 0) }}</div></div>
+  <div class="card"><div class="k">MAJOR</div><div class="n">{{ levels.get('major', 0) }}</div></div>
+</div>
+
+<h2>Top packages ({{ by_pkg|length }})</h2>
+<div class="pill-list">
+  {% for pkg, n in by_pkg %}<span class="pill"><span class="n">{{ n }}</span> × {{ pkg }}</span>{% endfor %}
+</div>
+
+<h2>Top CVEs ({{ by_cve|length }})</h2>
+<div class="pill-list">
+  {% for cve, n in by_cve %}<span class="pill"><span class="n">{{ n }}</span> × {{ cve }}</span>{% endfor %}
+</div>
+
+<h2>Easy wins (semver PATCH, {{ easy_wins|length }})</h2>
+<table>
+  <thead>
+    <tr><th>Severity</th><th>CVE</th><th>Package</th><th>Current</th><th>→ Fix</th><th>Host</th></tr>
+  </thead>
+  <tbody>
+    {% for r in easy_wins %}
+    <tr>
+      <td><span class="badge b-{{ r.severity|lower }}">{{ r.severity }}</span></td>
+      <td>{{ r.cve }}</td>
+      <td>{{ r.pkg }}</td>
+      <td style="color:var(--dim);">{{ r.cur }}</td>
+      <td style="color:var(--green);">{{ r.fix }}</td>
+      <td style="color:var(--dim);">{{ r.host }}</td>
+    </tr>
+    {% endfor %}
+    {% if not easy_wins %}
+    <tr><td colspan="6" style="color:var(--dim);text-align:center;padding:1.5rem;">no patch-level wins · everything is minor/major/unknown</td></tr>
+    {% endif %}
+  </tbody>
+</table>
+
+<h2>All patchable findings ({{ rows|length }})</h2>
+<table>
+  <thead>
+    <tr><th>Severity</th><th>Level</th><th>CVE</th><th>Package</th><th>Current</th><th>→ Fix</th><th>Host</th></tr>
+  </thead>
+  <tbody>
+    {% for r in rows %}
+    <tr>
+      <td><span class="badge b-{{ r.severity|lower }}">{{ r.severity }}</span></td>
+      <td><span class="badge b-{{ r.level }}">{{ r.level }}</span></td>
+      <td>{{ r.cve }}</td>
+      <td>{{ r.pkg }}</td>
+      <td style="color:var(--dim);">{{ r.cur }}</td>
+      <td style="color:var(--green);">{{ r.fix }}</td>
+      <td style="color:var(--dim);">{{ r.host }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
