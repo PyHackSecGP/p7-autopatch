@@ -89,6 +89,32 @@ class DojoClient:
                 return
             offset += len(results)
 
+    def mitigate(self, finding_id: int, note: str) -> bool:
+        """Mark a finding mitigated and append a note. Return True on success."""
+        url = f"{self.base}/api/v2/findings/{finding_id}/"
+        payload = {
+            "is_mitigated": True,
+            "active": False,
+            "verified": True,
+            "mitigated_by": None,
+        }
+        try:
+            resp = self._session.patch(url, json=payload, timeout=self.timeout)
+            resp.raise_for_status()
+        except Exception as e:
+            log.warning("mitigate failed for finding %s: %s", finding_id, e)
+            return False
+        self.add_note(finding_id, note)
+        return True
+
+    def add_note(self, finding_id: int, text: str) -> None:
+        """POST a note to a finding. Non-fatal on failure."""
+        url = f"{self.base}/api/v2/findings/{finding_id}/notes/"
+        try:
+            self._session.post(url, json={"entry": text}, timeout=self.timeout).raise_for_status()
+        except Exception as e:
+            log.debug("add_note failed for finding %s: %s", finding_id, e)
+
     def list_products(self) -> list[dict]:
         """List all DefectDojo products — id, name."""
         resp = self._session.get(f"{self.base}/api/v2/products/", params={"limit": 100}, timeout=self.timeout)

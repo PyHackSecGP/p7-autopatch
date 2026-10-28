@@ -29,6 +29,10 @@ def main(argv: list[str] | None = None) -> int:
     pr = sub.add_parser("run", help="Run the patch loop against one CT target")
     pr.add_argument("--target", type=int, required=True, help="Proxmox CT ID to patch")
     pr.add_argument("--dry-run", action="store_true", help="Classify + print plan; no pct actions")
+    pr.add_argument("--backend", choices=["apt", "apk"], default="apt", help="Package backend")
+    pr.add_argument("--product-id", type=int, help="Scope DefectDojo query to one product id")
+    pr.add_argument("--verify-cves", action="store_true", help="Trivy rescan after patch; rollback if CVE still present")
+    pr.add_argument("--writeback", action="store_true", help="Mark finding mitigated in DefectDojo on success")
     pr.add_argument(
         "--max-change",
         choices=[c.value for c in ChangeLevel if c is not ChangeLevel.UNKNOWN],
@@ -65,6 +69,7 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_list(dojo, args)
 
     if args.cmd == "run" or args.target:
+        from .notify import from_env as notifier_from_env
         skip = {int(x) for x in os.environ.get("SKIP_HOSTS", "").split(",") if x.strip().isdigit()}
         checks = parse_healthcheck_env(os.environ.get("HEALTHCHECKS", ""))
         max_change = args.max_change or ChangeLevel.PATCH.value
@@ -72,6 +77,11 @@ def main(argv: list[str] | None = None) -> int:
         orch = Orchestrator(
             dojo=dojo, pct=pct, healthchecks=checks,
             max_change=ChangeLevel(max_change), skip_hosts=skip,
+            backend=getattr(args, "backend", "apt"),
+            product_id=getattr(args, "product_id", None),
+            notifier=notifier_from_env(),
+            verify_cves=getattr(args, "verify_cves", False),
+            writeback=getattr(args, "writeback", False),
         )
         outcomes = orch.run(args.target)
         _print_summary(outcomes)
